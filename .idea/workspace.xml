@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="a87bd5bd-70ce-42db-a5f6-5f7f4ef82f03" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/DEPLOY.md" beforeDir="false" afterPath="$PROJECT_DIR$/DEPLOY.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client-rs/src/api.rs" beforeDir="false" afterPath="$PROJECT_DIR$/client-rs/src/api.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client-rs/src/client.rs" beforeDir="false" afterPath="$PROJECT_DIR$/client-rs/src/client.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/channel_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/client/channel_client.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/d1/0003_channels.sql" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/d1/0003_channels.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/ChannelDetail.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ChannelDetail.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Dashboard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/queue-consumer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/queue-consumer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/channels.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/channels.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/stream.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/stream.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/ui.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/ui.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/webhook.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/webhook.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wrangler.jsonc" beforeDir="false" afterPath="$PROJECT_DIR$/wrangler.jsonc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/需求.md" beforeDir="false" afterPath="$PROJECT_DIR$/需求.md" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 2
+}]]></component>
+  <component name="ProjectId" id="3ChZW3utBi8Q8uaOC3NtvnwyRsj" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "/Users/liuxujein/Documents/pyspace/botMsg"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-50da183f06c8-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.13135.95" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a87bd5bd-70ce-42db-a5f6-5f7f4ef82f03" name="Changes" comment="" />
+      <created>1776839791669</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1776839791669</updated>
+    </task>
+    <servers />
+  </component>
+</project>

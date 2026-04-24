@@ -1,0 +1,63 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "linkedbot",
+  "main": "src/index.tsx",
+  "compatibility_date": "2026-04-09",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  "assets": { "directory": "./public" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "linkedbot",
+      "database_id": "e645d2a6-f2ac-4100-8898-01a1d27169af",
+      "migrations_dir": "migrations/d1"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "AVATARS",
+      "bucket_name": "images"
+    }
+  ],
+  "vars": {
+    "PUBLIC_BASE_URL": "https://linkedbot.io",
+    "JWT_EXPIRES_HOURS": "24"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "SSE_CONNECTIONS",
+      "id": "4f5788497bb04491acb623cbbbbfe735"
+    }
+  ],
+  // ── Cloudflare Queues ─────────────────────────────────────────
+  "queues": {
+    "producers": [
+      {
+        "queue": "linkedbot-sendbox",
+        "binding": "SENDBOX_QUEUE"
+      }
+    ],
+    "consumers": [
+      {
+        "queue": "linkedbot-sendbox",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        "max_retries": 5,
+        "dead_letter_queue": "linkedbot-dlq",
+        "max_concurrency": 2
+      },
+      {
+        "queue": "linkedbot-dlq",
+        "max_batch_size": 10,
+        "max_batch_timeout": 30,
+        "max_retries": 0
+      }
+    ]
+  },
+  // Cron: 仅做过期数据清理（重试已由 Queue 托管）
+  "triggers": {
+    "crons": ["0 * * * *"]
+  }
+  // Secrets (wrangler secret put): SECRET_KEY, JWT_SECRET
+}
