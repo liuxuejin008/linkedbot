@@ -34,13 +34,13 @@
   "queues": {
     "producers": [
       {
-        "queue": "linkedbot-sendbox",
-        "binding": "SENDBOX_QUEUE"
+        "queue": "linkedbot-mailbox",
+        "binding": "MAILBOX_QUEUE"
       }
     ],
     "consumers": [
       {
-        "queue": "linkedbot-sendbox",
+        "queue": "linkedbot-mailbox",
         "max_batch_size": 10,
         "max_batch_timeout": 5,
         "max_retries": 5,

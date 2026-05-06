@@ -5,7 +5,7 @@ import { checkChannelAccess } from "../lib/access";
 import type { AppEnv, ChannelRow, ChannelMode } from "../types";
 
 const ALLOWED_AVATAR_EXT = new Set(["png", "jpg", "jpeg", "gif", "webp"]);
-const VALID_MODES = new Set<ChannelMode>(["sendbox", "proxy", "email"]);
+const VALID_MODES = new Set<ChannelMode>(["mailbox", "proxy", "email"]);
 
 const channels = new Hono<AppEnv>();
 channels.use("*", jwtAuth);
@@ -19,7 +19,7 @@ function channelJson(ch: ChannelRow, baseUrl: string) {
     webhook_secret: ch.webhook_secret,
     email_prefix: ch.email_prefix,
     mode: ch.mode,
-    sendbox_response: ch.sendbox_response,
+    mailbox_response: ch.mailbox_response,
     created_at: ch.created_at,
   };
 }
@@ -30,8 +30,8 @@ channels.post("/", async (c) => {
     name?: string;
     mode?: string;
     email_prefix?: string;
-    sendbox_response?: string;
-  }>().catch(() => ({ name: undefined, mode: undefined, email_prefix: undefined, sendbox_response: undefined }));
+    mailbox_response?: string;
+  }>().catch(() => ({ name: undefined, mode: undefined, email_prefix: undefined, mailbox_response: undefined }));
 
   let name = (body.name ?? "My Channel").trim();
   if (!name) name = "My Channel";
@@ -39,9 +39,9 @@ channels.post("/", async (c) => {
 
   const mode: ChannelMode = VALID_MODES.has(body.mode as ChannelMode)
     ? (body.mode as ChannelMode)
-    : "sendbox";
+    : "mailbox";
 
-  const sendboxResponse = body.sendbox_response ?? '{"ok":true}';
+  const mailboxResponse = body.mailbox_response ?? '{"ok":true}';
 
   const secret = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
 
@@ -54,9 +54,9 @@ channels.post("/", async (c) => {
   }
 
   const row = await c.env.DB.prepare(
-    "INSERT INTO channels (owner_user_id, name, webhook_secret, email_prefix, mode, sendbox_response) VALUES (?, ?, ?, ?, ?, ?) RETURNING *"
+    "INSERT INTO channels (owner_user_id, name, webhook_secret, email_prefix, mode, mailbox_response) VALUES (?, ?, ?, ?, ?, ?) RETURNING *"
   )
-    .bind(userId, name, secret.slice(0, 43), emailPrefix, mode, sendboxResponse)
+    .bind(userId, name, secret.slice(0, 43), emailPrefix, mode, mailboxResponse)
     .first<ChannelRow>();
 
   return c.json(channelJson(row!, c.env.PUBLIC_BASE_URL), 201);
@@ -89,7 +89,7 @@ channels.patch("/:id", async (c) => {
     avatar_url?: string | null;
     mode?: string;
     email_prefix?: string;
-    sendbox_response?: string;
+    mailbox_response?: string;
   }>();
 
   let changed = false;
@@ -112,8 +112,8 @@ channels.patch("/:id", async (c) => {
     ch.mode = body.mode as ChannelMode;
     changed = true;
   }
-  if (body.sendbox_response !== undefined) {
-    ch.sendbox_response = body.sendbox_response;
+  if (body.mailbox_response !== undefined) {
+    ch.mailbox_response = body.mailbox_response;
     changed = true;
   }
   if (body.email_prefix !== undefined) {
@@ -129,9 +129,9 @@ channels.patch("/:id", async (c) => {
 
   if (changed) {
     await c.env.DB.prepare(
-      "UPDATE channels SET name = ?, avatar_url = ?, mode = ?, email_prefix = ?, sendbox_response = ? WHERE id = ?"
+      "UPDATE channels SET name = ?, avatar_url = ?, mode = ?, email_prefix = ?, mailbox_response = ? WHERE id = ?"
     )
-      .bind(ch.name, ch.avatar_url, ch.mode, ch.email_prefix, ch.sendbox_response, channelId)
+      .bind(ch.name, ch.avatar_url, ch.mode, ch.email_prefix, ch.mailbox_response, channelId)
       .run();
   }
 

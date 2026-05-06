@@ -11,7 +11,7 @@ ChannelClient (本文件，内网端)
     · 主动向 ChannelServer 发起 SSE 长连接（规避防火墙入站拦截）
     · 解析 SSE 事件流，将事件重构为本地 HTTP 请求
     · Proxy 模式：将 ChannelReceiver 的响应回传给 ChannelServer，完成同步透传
-    · Sendbox 模式：收到消息后异步转发到 ChannelReceiver，无需等待
+    · Mailbox 模式：收到消息后异步转发到 ChannelReceiver，无需等待
 
 ChannelReceiver (本地业务端)
     运行在内网，处理具体业务逻辑（支付回调、告警、自动化等）。
@@ -23,7 +23,7 @@ proxy:
     外部 → ChannelServer（挂起请求）→ SSE → ChannelClient → ChannelReceiver
     → ChannelClient 回传结果 → ChannelServer 结束挂起 → 外部收到响应
 
-sendbox:
+mailbox:
     外部 → ChannelServer（保存消息，立即返回配置的静态响应）→ SSE →
     ChannelClient → ChannelReceiver（异步，无需等待）
 """
@@ -149,8 +149,8 @@ class ChannelServerAPI:
         resp.raise_for_status()
         return resp.json()["forwards"]
 
-    async def ack_sendbox_message(self, channel_id: int) -> None:
-        """Sendbox 模式：将最早一条未读消息标为已读。"""
+    async def ack_mailbox_message(self, channel_id: int) -> None:
+        """Mailbox 模式：将最早一条未读消息标为已读。"""
         await self.http.get(
             f"{self.cfg.server_url}/api/channels/{channel_id}/messages/pull",
             params={"limit": "1"},
@@ -350,16 +350,16 @@ class ChannelClient:
     - 主动向 ChannelServer 建立 SSE 长连接
     - 解析 proxy_request / message 两类事件
     - Proxy 模式：收到事件 → 调用 ChannelReceiver → 回传结果给 ChannelServer
-    - Sendbox 模式：收到事件 → 调用 ChannelReceiver（异步，无需等待结果回传）
+    - Mailbox 模式：收到事件 → 调用 ChannelReceiver（异步，无需等待结果回传）
     """
 
     def __init__(self, api: ChannelServerAPI, channel: dict) -> None:
         self.api = api
         self.channel_id: int = channel["id"]
         self.channel_name: str = channel["name"]
-        self.mode: str = channel.get("mode", "sendbox")
+        self.mode: str = channel.get("mode", "mailbox")
         # SSE 游标，用于断线重连后续取
-        self._since: int = 0          # sendbox message cursor
+        self._since: int = 0          # mailbox message cursor
         self._proxy_since: int = 0    # proxy request cursor
         # ChannelReceiver 地址列表（从 ChannelServer 同步）
         self._receivers: list[dict] = []
@@ -390,10 +390,10 @@ class ChannelClient:
         except Exception as exc:
             log.warning("[ChannelClient] 频道#%d 同步 ChannelReceiver 失败: %s", self.channel_id, exc)
 
-    # ── Sendbox 模式处理 ──────────────────────────────────────────────────────
+    # ── Mailbox 模式处理 ──────────────────────────────────────────────────────
 
-    async def _on_sendbox_message(self, message: dict) -> None:
-        """步骤2→3→4：收到 sendbox message 事件，转发至 ChannelReceiver。"""
+    async def _on_mailbox_message(self, message: dict) -> None:
+        """步骤2→3→4：收到 mailbox message 事件，转发至 ChannelReceiver。"""
         if not self._receivers:
             self.stats_fail += 1
             return
@@ -412,7 +412,7 @@ class ChannelClient:
 
         if all_ok:
             try:
-                await self.api.ack_sendbox_message(self.channel_id)
+                await self.api.ack_mailbox_message(self.channel_id)
                 log.info(
                     "[ChannelClient] 频道#%d 消息#%s 已标为已读",
                     self.channel_id, message.get("id"),
@@ -551,7 +551,7 @@ class ChannelClient:
                                     self._since = max(self._since, int(evt.id))
                                 except ValueError:
                                     pass
-                            await self._on_sendbox_message(msg)
+                            await self._on_mailbox_message(msg)
 
                         elif evt.event == "reconnect":
                             break
@@ -603,7 +603,7 @@ async def main() -> None:
         return
 
     names = ", ".join(
-        f'{ch["name"]} (#{ch["id"]}, {ch.get("mode", "sendbox")})'
+        f'{ch["name"]} (#{ch["id"]}, {ch.get("mode", "mailbox")})'
         for ch in channels
     )
     log.info("[ChannelClient] 监听 %d 个频道: %s", len(channels), names)

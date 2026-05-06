@@ -72,3 +72,29 @@ export function loginRequired(c: Context<AppEnv>): Response | null {
   }
   return null;
 }
+
+export function setFlash(c: Context<AppEnv>, category: string, message: string) {
+  const existing = getCookie(c, "flash_messages");
+  let flashes: { category: string; message: string }[] = [];
+  if (existing) {
+    try {
+      const decoded = atob(existing);
+      flashes = JSON.parse(decoded);
+    } catch { }
+  }
+  flashes.push({ category, message });
+  const encoded = btoa(JSON.stringify(flashes));
+  setCookie(c, "flash_messages", encoded, { path: "/", httpOnly: true, secure: true, sameSite: "Lax" });
+}
+
+export function getFlashes(c: Context<AppEnv>): { category: string; message: string }[] {
+  const existing = getCookie(c, "flash_messages");
+  if (existing) {
+    deleteCookie(c, "flash_messages", { path: "/" });
+    try {
+      const decoded = atob(existing);
+      return JSON.parse(decoded);
+    } catch { }
+  }
+  return [];
+}

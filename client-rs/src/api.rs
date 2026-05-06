@@ -178,7 +178,7 @@ impl ChannelServerApi {
         Ok(())
     }
 
-    pub async fn ack_sendbox_message(&self, channel_id: i64) -> Result<(), String> {
+    pub async fn ack_mailbox_message(&self, channel_id: i64) -> Result<(), String> {
         let url = format!(
             "{}/api/channels/{}/messages/pull",
             self.cfg.server_url, channel_id
@@ -193,7 +193,7 @@ impl ChannelServerApi {
             .map_err(|e| format!("网络错误: {e}"))?;
         if !resp.status().is_success() {
             error!(
-                "[ChannelClient] ack_sendbox_message 失败: HTTP {}",
+                "[ChannelClient] ack_mailbox_message 失败: HTTP {}",
                 resp.status()
             );
         }

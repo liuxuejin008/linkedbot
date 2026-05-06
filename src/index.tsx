@@ -11,9 +11,9 @@ import members from "./routes/members";
 import stats from "./routes/stats";
 import ui from "./routes/ui";
 import { cleanupTimedOutProxyRequests } from "./lib/forwarder";
-import { handleSendboxQueue, handleDLQ } from "./queue-consumer";
+import { handleMailboxQueue, handleDLQ } from "./queue-consumer";
 import PostalMime from "postal-mime";
-import type { Env, SendboxQueueMessage } from "./types";
+import type { Env, MailboxQueueMessage } from "./types";
 
 const app = new Hono<AppEnv>();
 
@@ -59,10 +59,10 @@ export default {
   scheduled,
 
   // ── Queue Consumer ────────────────────────────────────────────
-  async queue(batch: MessageBatch<SendboxQueueMessage>, env: Env): Promise<void> {
+  async queue(batch: MessageBatch<MailboxQueueMessage>, env: Env): Promise<void> {
     switch (batch.queue) {
-      case "linkedbot-sendbox":
-        await handleSendboxQueue(batch, env);
+      case "linkedbot-mailbox":
+        await handleMailboxQueue(batch, env);
         break;
       case "linkedbot-dlq":
         await handleDLQ(batch, env);

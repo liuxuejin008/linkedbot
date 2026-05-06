@@ -5,7 +5,7 @@
  *
  * 职责：
  *  1. 接收外部系统（微信/支付宝/任意第三方）的 HTTP 回调
- *  2. 根据频道模式（proxy / sendbox）分支处理：
+ *  2. 根据频道模式（proxy / mailbox）分支处理：
  *
  * Proxy 模式（同步透传）
  *  a. 生成唯一 ReqID，将请求存入 D1 `proxy_requests`（status=pending）
@@ -15,10 +15,10 @@
  *  d. 本路由轮询到 status=completed，将结果同步返回给外部调用方
  *  e. 若超过 PROXY_TIMEOUT_MS 仍未收到回传，返回 504 Gateway Timeout
  *
- * Sendbox 模式（异步投递）
+ * Mailbox 模式（异步投递）
  *  a. 将消息写入 D1 `messages`
  *  b. 立即返回频道配置的静态响应（如 {"ok":true}）
- *  c. 将消息入队 Cloudflare Queue（linkedbot-sendbox），由 Queue Consumer
+ *  c. 将消息入队 Cloudflare Queue（linkedbot-mailbox），由 Queue Consumer
  *     负责投递 + 重试 + DLQ 兜底，替代原 waitUntil(forwardMessage)
  */
 import { Hono } from "hono";
@@ -172,7 +172,7 @@ async function handleWebhook(c: WebhookCtx) {
     });
   }
 
-  // ── Sendbox 模式 ─────────────────────────────────────────────────────────
+  // ── Mailbox 模式 ─────────────────────────────────────────────────────────
   // 消息先落 D1 再入队，保证持久化。
   // 投递 + 重试 + DLQ 全部由 Cloudflare Queues 平台托管。
   const msgRow = await c.env.DB.prepare(
@@ -185,14 +185,14 @@ async function handleWebhook(c: WebhookCtx) {
   const messageId = msgRow!.id;
 
   // 入队：替代原 waitUntil(forwardMessage(...))
-  await c.env.SENDBOX_QUEUE.send({
+  await c.env.MAILBOX_QUEUE.send({
     messageId,
     channelId: channel.id,
   });
 
   let responseBody: unknown;
   try {
-    responseBody = JSON.parse(channel.sendbox_response);
+    responseBody = JSON.parse(channel.mailbox_response);
   } catch {
     responseBody = { ok: true };
   }

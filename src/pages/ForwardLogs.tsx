@@ -1,13 +1,16 @@
 import type { FC } from "hono/jsx";
+import type { Lang, TranslatorFunction } from "../i18n";
 import { Layout } from "./Layout";
 import type { ForwardLogRow, MessageRow, ChannelForwardRow } from "../types";
 
 type Props = {
+  lang: Lang;
+  t: TranslatorFunction;
   email: string;
   channel: { id: number; name: string };
   logs: (ForwardLogRow & {
     message_payload?: string | null;
-    forward_url?: string;
+    forward_url?: string | null;
   })[];
   total: number;
   page: number;
@@ -31,6 +34,8 @@ function parsePayload(payload: string | null | undefined): string {
 }
 
 export const ForwardLogsPage: FC<Props> = ({
+  lang,
+  t,
   email,
   channel,
   logs,
@@ -45,54 +50,54 @@ export const ForwardLogsPage: FC<Props> = ({
   const hasPrev = page > 1;
 
   return (
-    <Layout title={`转发记录 — ${channel.name} — LinkedBot`} email={email} flashes={flashes}>
+    <Layout title={`${t("logs.title")} — ${channel.name} — LinkedBot`} email={email} flashes={flashes} lang={lang} t={t}>
       <header class="page-head">
         <p class="breadcrumb">
-          <a href="/dashboard">控制台</a> / <a href={`/channels/${channel.id}`}>{channel.name}</a> / <span aria-current="page">转发记录</span>
+          <a href="/dashboard">{t("common.dashboard")}</a> / <a href={`/channels/${channel.id}`}>{channel.name}</a> / <span aria-current="page">{t("logs.title")}</span>
         </p>
         <div class="hero-row">
-          <h1 class="ds-page-title">转发记录</h1>
-          <span class="badge" title="总数">{total} 条</span>
+          <h1 class="ds-page-title">{t("logs.title")}</h1>
+          <span class="badge" title={t("logs.totalCount", { total: total })}>{total} {t("logs.items")}</span>
         </div>
         <p class="ds-muted ds-small" style="margin-top:12px;">
-          查看频道 #${channel.id} 的转发日志，支持搜索和删除。
+          {t("logs.desc", { id: channel.id })}
         </p>
       </header>
 
       <section class="panel" aria-labelledby="logs-title">
         <div class="logs-toolbar">
-          <h2 class="ds-panel-title" id="logs-title" style="margin:0;">日志列表</h2>
+          <h2 class="ds-panel-title" id="logs-title" style="margin:0;">{t("logs.list")}</h2>
           <form class="search-form" method="get" action={`/channels/${channel.id}/logs`}>
             <input
               type="text"
               name="search"
-              placeholder="搜索消息 ID / 转发 URL / error"
+              placeholder={t("logs.searchPlaceholder")}
               value={search}
               class="search-input"
             />
-            <button type="submit" class="btn">搜索</button>
+            <button type="submit" class="btn">{t("common.search")}</button>
             {search && (
-              <a href={`/channels/${channel.id}/logs`} class="btn">清除</a>
+              <a href={`/channels/${channel.id}/logs`} class="btn">{t("logs.clear")}</a>
             )}
           </form>
         </div>
 
         {logs.length === 0 ? (
-          <p class="ds-muted" style="margin-top:16px;">暂无转发记录。</p>
+          <p class="ds-muted" style="margin-top:16px;">{t("logs.noLogs")}</p>
         ) : (
           <div class="table-wrap" style="margin-top:16px;">
             <table class="data-table">
               <thead>
                 <tr>
                   <th scope="col">ID</th>
-                  <th scope="col">消息 ID</th>
-                  <th scope="col">转发目标</th>
-                  <th scope="col">状态</th>
+                  <th scope="col">{t("logs.messageId")}</th>
+                  <th scope="col">{t("logs.target")}</th>
+                  <th scope="col">{t("common.status")}</th>
                   <th scope="col">HTTP</th>
-                  <th scope="col">重试</th>
-                  <th scope="col">时间</th>
+                  <th scope="col">{t("common.retries")}</th>
+                  <th scope="col">{t("logs.time")}</th>
                   <th scope="col">Payload</th>
-                  <th scope="col">操作</th>
+                  <th scope="col">{t("logs.actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -100,16 +105,16 @@ export const ForwardLogsPage: FC<Props> = ({
                   <tr key={log.id}>
                     <td class="mono">{log.id}</td>
                     <td class="mono">{log.message_id}</td>
-                    <td class="mono" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title={log.forward_url}>
+                    <td class="mono" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title={log.forward_url ?? undefined}>
                       {log.forward_url ?? "—"}
                     </td>
                     <td>
                       {log.delivered_at ? (
-                        <span class="tag-pill" style="background:#ecfdf5;color:#059669;">成功</span>
+                        <span class="tag-pill" style="background:#ecfdf5;color:#059669;">{t("logs.success")}</span>
                       ) : log.error ? (
-                        <span class="tag-pill" style="background:#fef2f2;color:#dc2626;" title={log.error}>失败</span>
+                        <span class="tag-pill" style="background:#fef2f2;color:#dc2626;" title={log.error}>{t("logs.failed")}</span>
                       ) : (
-                        <span class="tag-pill" style="background:#fffbeb;color:#d97706;">等待</span>
+                        <span class="tag-pill" style="background:#fffbeb;color:#d97706;">{t("logs.waiting")}</span>
                       )}
                     </td>
                     <td class="mono">
@@ -123,7 +128,7 @@ export const ForwardLogsPage: FC<Props> = ({
                     <td class="nowrap">{formatTime(log.created_at)}</td>
                     <td>
                       <details class="payload-details">
-                        <summary class="mono-label" style="cursor:pointer;">查看</summary>
+                        <summary class="mono-label" style="cursor:pointer;">{t("logs.view")}</summary>
                         <pre class="payload-preview">{parsePayload(log.message_payload)}</pre>
                       </details>
                     </td>
@@ -131,9 +136,9 @@ export const ForwardLogsPage: FC<Props> = ({
                       <form
                         method="post"
                         action={`/channels/${channel.id}/logs/${log.id}/delete`}
-                        onsubmit="return confirm('确定删除此记录？')"
+                        onsubmit={`return confirm('${t("logs.confirmDelete")}')`}
                       >
-                        <button type="submit" class="btn btn-sm btn-danger">删除</button>
+                        <button type="submit" class="btn btn-sm btn-danger">{t("common.delete")}</button>
                       </form>
                     </td>
                   </tr>
@@ -144,29 +149,29 @@ export const ForwardLogsPage: FC<Props> = ({
         )}
 
         {totalPages > 1 && (
-          <nav class="pagination" aria-label="分页">
+          <nav class="pagination" aria-label={t("logs.pagination")}>
             {hasPrev ? (
               <a
                 class="btn"
                 href={`/channels/${channel.id}/logs?page=${page - 1}${search ? `&search=${encodeURIComponent(search)}` : ""}`}
               >
-                ← 上一页
+                ← {t("logs.prevPage")}
               </a>
             ) : (
-              <span class="btn" style="opacity:0.4;cursor:not-allowed;">← 上一页</span>
+              <span class="btn" style="opacity:0.4;cursor:not-allowed;">← {t("logs.prevPage")}</span>
             )}
             <span class="page-info">
-              第 {page} / {totalPages} 页，共 {total} 条
+              {t("logs.pageInfoFull", { page: page, totalPages: totalPages, total: total })}
             </span>
             {hasNext ? (
               <a
                 class="btn"
                 href={`/channels/${channel.id}/logs?page=${page + 1}${search ? `&search=${encodeURIComponent(search)}` : ""}`}
               >
-                下一页 →
+                {t("logs.nextPage")} →
               </a>
             ) : (
-              <span class="btn" style="opacity:0.4;cursor:not-allowed;">下一页 →</span>
+              <span class="btn" style="opacity:0.4;cursor:not-allowed;">{t("logs.nextPage")} →</span>
             )}
           </nav>
         )}

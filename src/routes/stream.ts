@@ -17,7 +17,7 @@ stream.use("*", jwtAuth);
  *     包含 ReqID + 外部请求载荷，ChannelClient 收到后调用 ChannelReceiver，
  *     再将结果 POST 到 /api/channels/:id/proxy-response/:reqId。
  *
- * - event: message         （Sendbox 模式）
+ * - event: message         （Mailbox 模式）
  *     包含已存入 D1 的消息，ChannelClient 异步转发到 ChannelReceiver。
  *
  * - event: skip            数据库记录损坏，游标已推进，ChannelClient 忽略即可。
@@ -77,8 +77,8 @@ stream.get("/channels/:id/messages/stream", async (c) => {
           lastLockCheck = Date.now();
         }
 
-        // Sendbox messages
-        if (channelMode === "sendbox") {
+        // Mailbox messages
+        if (channelMode === "mailbox") {
           const { results } = await db
             .prepare(
               `SELECT id, channel_id, payload_json, headers_json, source_ip, created_at, read_at, tag

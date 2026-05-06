@@ -5,7 +5,10 @@ import {
   setSession,
   clearSession,
   loginRequired,
+  setFlash,
+  getFlashes,
 } from "../middleware/session";
+import { i18nMiddleware } from "../middleware/i18n";
 import { hashPassword, verifyPassword } from "../lib/crypto";
 import { webhookUrlForSecret } from "../lib/helpers";
 import { LoginPage } from "../pages/Login";
@@ -16,11 +19,17 @@ import { ForwardLogsPage } from "../pages/ForwardLogs";
 import type { AppEnv, UserRow, ChannelRow, ChannelForwardRow, ChannelMode, MessageRow, ForwardLogRow } from "../types";
 
 const ALLOWED_AVATAR_EXT = new Set(["png", "jpg", "jpeg", "gif", "webp"]);
-const VALID_MODES = new Set<ChannelMode>(["sendbox", "proxy", "email"]);
+const VALID_MODES = new Set<ChannelMode>(["mailbox", "proxy", "email"]);
 
 const ui = new Hono<AppEnv>();
 
 ui.use("*", sessionMiddleware);
+ui.use("*", i18nMiddleware);
+
+ui.get("/set-lang", (c) => {
+  const next = c.req.query("next") || "/dashboard";
+  return c.redirect(safeNext(next));
+});
 
 async function getUserEmail(
   db: D1Database,
@@ -47,7 +56,7 @@ ui.get("/", (c) => {
 ui.get("/login", async (c) => {
   const email = await getUserEmail(c.env.DB, getSessionUserId(c));
   const next = c.req.query("next");
-  return c.html(<LoginPage nextUrl={next} email={email} />);
+  return c.html(<LoginPage nextUrl={next} email={email} t={c.get("t")} lang={c.get("lang")} />);
 });
 
 ui.post("/login", async (c) => {
@@ -58,7 +67,7 @@ ui.post("/login", async (c) => {
 
   if (!email || !password) {
     return c.html(
-      <LoginPage nextUrl={next} flashes={[{ category: "error", message: "请填写邮箱和密码。" }]} />
+      <LoginPage nextUrl={next} flashes={[{ category: "error", message: c.get("t")("auth.fillEmailPassword") }]} t={c.get("t")} lang={c.get("lang")} />
     );
   }
 
@@ -68,7 +77,7 @@ ui.post("/login", async (c) => {
 
   if (!user || !(await verifyPassword(password, user.password_hash))) {
     return c.html(
-      <LoginPage nextUrl={next} flashes={[{ category: "error", message: "邮箱或密码错误。" }]} />
+      <LoginPage nextUrl={next} flashes={[{ category: "error", message: c.get("t")("auth.invalidCredentials") }]} t={c.get("t")} lang={c.get("lang")} />
     );
   }
 
@@ -79,7 +88,7 @@ ui.post("/login", async (c) => {
 // --- Register ---
 ui.get("/register", async (c) => {
   const email = await getUserEmail(c.env.DB, getSessionUserId(c));
-  return c.html(<RegisterPage email={email} />);
+  return c.html(<RegisterPage email={email} t={c.get("t")} lang={c.get("lang")} />);
 });
 
 ui.post("/register", async (c) => {
@@ -88,17 +97,18 @@ ui.post("/register", async (c) => {
   const password = form.get("password") as string;
   const password2 = form.get("password2") as string;
 
+  const t = c.get("t");
   const flash = (msg: string) =>
-    c.html(<RegisterPage flashes={[{ category: "error", message: msg }]} />);
+    c.html(<RegisterPage flashes={[{ category: "error", message: msg }]} t={t} lang={c.get("lang")} />);
 
-  if (!email || !email.includes("@")) return flash("请输入有效邮箱。");
-  if (!password || password.length < 8) return flash("密码至少 8 位。");
-  if (password !== password2) return flash("两次输入的密码不一致。");
+  if (!email || !email.includes("@")) return flash(t("auth.invalidEmail"));
+  if (!password || password.length < 8) return flash(t("auth.passwordLength"));
+  if (password !== password2) return flash(t("auth.passwordMismatch"));
 
   const existing = await c.env.DB.prepare("SELECT id FROM users WHERE email = ?")
     .bind(email)
     .first();
-  if (existing) return flash("邮箱已被注册。");
+  if (existing) return flash(t("auth.emailTaken"));
 
   const hash = await hashPassword(password);
   const row = await c.env.DB.prepare(
@@ -145,7 +155,7 @@ ui.get("/dashboard", async (c) => {
     })
   );
 
-  return c.html(<DashboardPage email={email} cards={cards} />);
+  return c.html(<DashboardPage email={email} cards={cards} t={c.get("t")} lang={c.get("lang")} />);
 });
 
 ui.post("/dashboard", async (c) => {
@@ -157,8 +167,8 @@ ui.post("/dashboard", async (c) => {
   if (!name) name = "My Channel";
   if (name.length > 128) name = name.slice(0, 128);
 
-  const modeInput = (form.get("mode") as string) ?? "sendbox";
-  const mode: ChannelMode = VALID_MODES.has(modeInput as ChannelMode) ? (modeInput as ChannelMode) : "sendbox";
+  const modeInput = (form.get("mode") as string) ?? "mailbox";
+  const mode: ChannelMode = VALID_MODES.has(modeInput as ChannelMode) ? (modeInput as ChannelMode) : "mailbox";
 
   let emailPrefix: string | null = null;
   const prefixInput = (form.get("email_prefix") as string)?.trim().toLowerCase();
@@ -262,6 +272,9 @@ ui.get("/channels/:id", async (c) => {
       messages={messages}
       unseen={count?.cnt ?? 0}
       stats={pageStats}
+      t={c.get("t")}
+      lang={c.get("lang")}
+      flashes={getFlashes(c)}
     />
   );
 });
@@ -353,7 +366,7 @@ ui.post("/channels/:id/settings", async (c) => {
   const name = ((form.get("name") as string) ?? "").trim();
   const modeInput = form.get("mode") as string;
   const emailPrefixInput = form.get("email_prefix") as string | null;
-  const sendboxResponse = form.get("sendbox_response") as string;
+  const mailboxResponse = form.get("mailbox_response") as string;
 
   const updates: string[] = [];
   const params: unknown[] = [];
@@ -376,9 +389,9 @@ ui.post("/channels/:id/settings", async (c) => {
       params.push(p);
     }
   }
-  if (sendboxResponse !== null && sendboxResponse !== undefined) {
-    updates.push("sendbox_response = ?");
-    params.push(sendboxResponse);
+  if (mailboxResponse !== null && mailboxResponse !== undefined) {
+    updates.push("mailbox_response = ?");
+    params.push(mailboxResponse);
   }
 
   if (updates.length > 0) {
@@ -408,6 +421,7 @@ ui.post("/channels/:id/avatar", async (c) => {
 
   const formData = await c.req.formData();
   const file = formData.get("file") as File | null;
+  const t = c.get("t");
   if (file && file.name) {
     const ext = file.name.split(".").pop()?.toLowerCase();
     if (ext && ALLOWED_AVATAR_EXT.has(ext)) {
@@ -419,7 +433,12 @@ ui.post("/channels/:id/avatar", async (c) => {
       await c.env.DB.prepare("UPDATE channels SET avatar_url = ? WHERE id = ?")
         .bind(avatarUrl, channelId)
         .run();
+      setFlash(c, "success", t("channel.uploadSuccess"));
+    } else {
+      setFlash(c, "error", t("channel.uploadInvalid"));
     }
+  } else {
+    setFlash(c, "error", t("channel.uploadMissing"));
   }
 
   return c.redirect(`/channels/${channelId}`);
@@ -516,6 +535,8 @@ ui.get("/channels/:id/logs", async (c) => {
       page={page}
       pageSize={pageSize}
       search={search}
+      t={c.get("t")}
+      lang={c.get("lang")}
     />
   );
 });

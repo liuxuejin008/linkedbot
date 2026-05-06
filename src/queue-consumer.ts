@@ -6,7 +6,7 @@
  * - 单条消息粒度的 ack/retry，无并发冲突
  * - 超过 max_retries 后自动进入 DLQ，零丢失
  */
-import type { Env, SendboxQueueMessage, ChannelForwardRow, MessageRow } from "./types";
+import type { Env, MailboxQueueMessage, ChannelForwardRow, MessageRow } from "./types";
 
 const MAX_BACKOFF_SECONDS = 1800; // 30 分钟
 
@@ -15,16 +15,16 @@ function backoffSeconds(attempts: number): number {
 }
 
 /**
- * Sendbox Queue Consumer
+ * Mailbox Queue Consumer
  *
- * 当 webhook.ts 将 SendboxQueueMessage 入队后，由本 consumer 消费：
+ * 当 webhook.ts 将 MailboxQueueMessage 入队后，由本 consumer 消费：
  * 1. 从 D1 读取原始消息 + channel_forwards 列表
  * 2. 逐个 HTTP 投递到转发目标
  * 3. 全部成功 → msg.ack()；任一失败 → msg.retry()
  * 4. 超过 max_retries 后平台自动将消息转入 DLQ
  */
-export async function handleSendboxQueue(
-  batch: MessageBatch<SendboxQueueMessage>,
+export async function handleMailboxQueue(
+  batch: MessageBatch<MailboxQueueMessage>,
   env: Env
 ): Promise<void> {
   for (const msg of batch.messages) {
@@ -126,7 +126,7 @@ export async function handleSendboxQueue(
  * 在此记录日志，后续可扩展为发送告警通知。
  */
 export async function handleDLQ(
-  batch: MessageBatch<SendboxQueueMessage>,
+  batch: MessageBatch<MailboxQueueMessage>,
   env: Env
 ): Promise<void> {
   for (const msg of batch.messages) {

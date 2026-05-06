@@ -835,3 +835,49 @@ details summary {
 details[open] > summary {
   margin-bottom: 4px;
 }
+/* —— Avatar Dropzone —— */
+.avatar-dropzone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  border: 2px dashed var(--ds-gray-100);
+  border-radius: var(--radius-card-lg);
+  background: var(--ds-gray-50);
+  transition: border-color 0.15s ease, background 0.15s ease;
+  cursor: pointer;
+  text-align: center;
+}
+
+.avatar-dropzone:hover {
+  border-color: var(--ds-gray-400);
+  background: var(--ds-white);
+}
+
+.avatar-dropzone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+}
+
+.dropzone-icon {
+  font-size: 24px;
+  margin-bottom: 12px;
+  color: var(--ds-gray-400);
+}
+
+.dropzone-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ds-black);
+}
+
+.dropzone-hint {
+  font-size: 12px;
+  color: var(--ds-gray-500);
+  margin-top: 4px;
+}

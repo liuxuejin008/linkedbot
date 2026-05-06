@@ -5,15 +5,19 @@ export type Env = {
   JWT_SECRET: string;
   PUBLIC_BASE_URL: string;
   JWT_EXPIRES_HOURS: string;
-  /** Cloudflare Queue: Sendbox 模式异步转发 */
-  SENDBOX_QUEUE: Queue;
+  /** Cloudflare Queue: Mailbox 模式异步转发 */
+  MAILBOX_QUEUE: Queue;
   /** KV: 用于 SSE 单实例互斥锁防多 Client 共同接收导致重复投递 */
   SSE_CONNECTIONS: KVNamespace;
 };
 
+import type { Lang, TranslatorFunction } from "./i18n";
+
 export type AppVars = {
   userId: number;
   sessionUserId: number | null;
+  lang: Lang;
+  t: TranslatorFunction;
 };
 
 export type AppEnv = { Bindings: Env; Variables: AppVars };
@@ -25,7 +29,7 @@ export type UserRow = {
   created_at: string;
 };
 
-export type ChannelMode = "sendbox" | "proxy" | "email";
+export type ChannelMode = "mailbox" | "proxy" | "email";
 
 export type ChannelRow = {
   id: number;
@@ -35,7 +39,7 @@ export type ChannelRow = {
   webhook_secret: string;
   email_prefix: string | null;
   mode: ChannelMode;
-  sendbox_response: string;
+  mailbox_response: string;
   created_at: string;
 };
 
@@ -113,11 +117,11 @@ export type ProxyRequestRow = {
 
 // ── Queue 消息体类型 ────────────────────────────────────────────
 
-/** Sendbox Queue: 异步转发消息 */
-export type SendboxQueueMessage = {
+/** Mailbox Queue: 异步转发消息 */
+export type MailboxQueueMessage = {
   messageId: number;
   channelId: number;
 };
 
 /** DLQ: 终态失败消息 (由平台自动转入，body 与原始 Queue 消息一致) */
-export type DLQMessage = SendboxQueueMessage;
+export type DLQMessage = MailboxQueueMessage;

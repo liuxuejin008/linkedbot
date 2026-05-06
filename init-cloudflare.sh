@@ -23,7 +23,7 @@ echo "$KV_OUTPUT"
 
 # 4. Create Queues
 echo "Creating Queues..."
-npx wrangler queues create linkedbot-sendbox || echo "⚠️  Queue linkedbot-sendbox might already exist."
+npx wrangler queues create linkedbot-mailbox || echo "⚠️  Queue linkedbot-mailbox might already exist."
 npx wrangler queues create linkedbot-dlq || echo "⚠️  Queue linkedbot-dlq might already exist."
 
 echo ""

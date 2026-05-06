@@ -1,14 +1,17 @@
 import type { FC } from "hono/jsx";
+import type { Lang, TranslatorFunction } from "../i18n";
 
 type Props = {
+  lang: Lang;
+  t: TranslatorFunction;
   title?: string;
   email?: string | null;
   flashes?: { category: string; message: string }[];
   children: unknown;
 };
 
-export const Layout: FC<Props> = ({ title, email, flashes, children }) => (
-  <html lang="zh-CN">
+export const Layout: FC<Props> = ({ lang, t, title, email, flashes, children }) => (
+  <html lang={lang}>
     <head>
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,19 +23,22 @@ export const Layout: FC<Props> = ({ title, email, flashes, children }) => (
       <header class="topbar">
         <div class="topbar-inner">
           <a class="brand" href="/">LinkedBot</a>
-          <nav class="nav" aria-label="主导航">
+          <div style={{ marginLeft: "auto", marginRight: "1rem" }}>
+            <a href={`/set-lang?lang=${t("lang.switchTo")}&next=/dashboard`} style={{ fontSize: "14px", color: "var(--text-muted)", textDecoration: "none" }}>{t("lang.switch")}</a>
+          </div>
+          <nav class="nav" aria-label={t("common.dashboard")}>
             {email ? (
               <>
                 <span class="nav-email" title={email}>{email}</span>
-                <a class="nav-link" href="/dashboard">控制台</a>
+                <a class="nav-link" href="/dashboard">{t("common.dashboard")}</a>
                 <form class="inline-form" action="/logout" method="post">
-                  <button type="submit" class="btn-text">退出</button>
+                  <button type="submit" class="btn-text">{t("common.logout")}</button>
                 </form>
               </>
             ) : (
               <div class="nav-actions">
-                <a class="btn compact" href="/login">登录</a>
-                <a class="btn primary compact" href="/register">注册</a>
+                <a class="btn compact" href="/login">{t("common.login")}</a>
+                <a class="btn primary compact" href="/register">{t("common.register")}</a>
               </div>
             )}
           </nav>

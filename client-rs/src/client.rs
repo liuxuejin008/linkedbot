@@ -27,7 +27,7 @@ impl ChannelClient {
             channel_id: ch.id,
             channel_name: ch.name,
             mode: if ch.mode.is_empty() {
-                "sendbox".into()
+                "mailbox".into()
             } else {
                 ch.mode
             },
@@ -82,9 +82,9 @@ impl ChannelClient {
         }
     }
 
-    // ── Sendbox event handler ────────────────────────────────────────────
+    // ── Mailbox event handler ────────────────────────────────────────────
 
-    async fn on_sendbox_message(&self, msg: &Value) {
+    async fn on_mailbox_message(&self, msg: &Value) {
         if self.receivers.is_empty() {
             return;
         }
@@ -118,7 +118,7 @@ impl ChannelClient {
         }
 
         if all_ok {
-            if let Err(e) = self.api.ack_sendbox_message(self.channel_id).await {
+            if let Err(e) = self.api.ack_mailbox_message(self.channel_id).await {
                 warn!(
                     "[ChannelClient] 频道#{} 消息#{} 标读失败: {}",
                     self.channel_id, msg_id, e
@@ -287,7 +287,7 @@ impl ChannelClient {
                                 if let Ok(id) = evt.id.parse::<i64>() {
                                     self.since = self.since.max(id);
                                 }
-                                self.on_sendbox_message(&msg).await;
+                                self.on_mailbox_message(&msg).await;
                             }
                             "reconnect" => break,
                             "skip" => {} // corrupted record, cursor already advanced

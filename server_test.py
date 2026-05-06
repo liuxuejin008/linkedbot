@@ -16,4 +16,4 @@ def get_user():
 
 if __name__ == '__main__':
     # debug=True 可以在修改代码后自动重启
-    app.run(debug=True, port=8099)
+    app.run(host="192.168.10.151", debug=True, port=8099)
