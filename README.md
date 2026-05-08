@@ -10,7 +10,7 @@ LinkedBot是一个运行在服务端，例如Cloudflare的webhook服务器，可
 
 LinkedBot是server端，LinkedBotClient是客户端。客户端要跑在普通的PC上，和LinkedBot是server的连接。
 
-当Botmsg收到信息的时候，LinkedBotClient通过长连接或者轮训给接受消息，LinkedBotClient再调用本地的类似Dify，N8N的webhook地址，这样Dify，N8N这些跑在本地机器但是没有公网IP的程序就可以收到外部信息，而且安全性也更好，而且LinkedBot能保存信息，保证信息不会丢。
+当LinkedBot收到信息的时候，LinkedBotClient通过长连接或者轮训给接受消息，LinkedBotClient再调用本地的类似Dify，N8N的webhook地址，这样Dify，N8N这些跑在本地机器但是没有公网IP的程序就可以收到外部信息，而且安全性也更好，而且LinkedBot能保存信息，保证信息不会丢。
 
 
 A Telegram-style bot host: a **public URL** receives HTTP webhooks, stores payloads in **D1** (SQLite); a **local client** polls with JWT to fetch unread messages. Avatars stored in **R2**. The entire stack runs on Cloudflare's free tier (100,000 requests/day).

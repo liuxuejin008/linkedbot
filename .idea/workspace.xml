@@ -1,26 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="a87bd5bd-70ce-42db-a5f6-5f7f4ef82f03" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/DEPLOY.md" beforeDir="false" afterPath="$PROJECT_DIR$/DEPLOY.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client-rs/src/api.rs" beforeDir="false" afterPath="$PROJECT_DIR$/client-rs/src/api.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client-rs/src/client.rs" beforeDir="false" afterPath="$PROJECT_DIR$/client-rs/src/client.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/channel_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/client/channel_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/d1/0003_channels.sql" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/d1/0003_channels.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/ChannelDetail.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/ChannelDetail.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Dashboard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/queue-consumer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/queue-consumer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/routes/channels.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/channels.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/routes/stream.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/stream.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/routes/ui.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/ui.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/routes/webhook.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/webhook.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wrangler.jsonc" beforeDir="false" afterPath="$PROJECT_DIR$/wrangler.jsonc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/需求.md" beforeDir="false" afterPath="$PROJECT_DIR$/需求.md" afterDir="false" />
-    </list>
+    <list default="true" id="a87bd5bd-70ce-42db-a5f6-5f7f4ef82f03" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,9 +16,9 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="3ChZW3utBi8Q8uaOC3NtvnwyRsj" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -44,7 +28,7 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "/Users/liuxujein/Documents/pyspace/botMsg"
+    "last_opened_file_path": "/Users/liuxujein/Documents/pyspace/linkedbot"
   }
 }]]></component>
   <component name="SharedIndexes">
