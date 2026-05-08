@@ -38,7 +38,7 @@ export default {
   "auth.emailTaken": "该邮箱已被注册。",
 
   "dashboard.title": "我的频道",
-  "dashboard.desc": "Webhook 由公网地址接收；本机只需打开控制台或使用 API 拉取未读队列 (Mailbox)。",
+  "dashboard.desc": "Webhook 由公网地址接收，转发给本地客户端",
   "dashboard.newChannel": "新建频道",
   "dashboard.newChannelDesc": "创建后将获得唯一 Webhook 路径，可向该 URL 发送 POST。",
   "dashboard.channelNamePlaceholder": "名称，例如 Alerts",

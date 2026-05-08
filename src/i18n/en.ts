@@ -38,7 +38,7 @@ export default {
   "auth.emailTaken": "Email is already taken.",
 
   "dashboard.title": "My Channels",
-  "dashboard.desc": "Webhooks are received from public addresses; locally, just open the dashboard or use the API to pull the unread queue (Mailbox).",
+  "dashboard.desc": "Webhooks are received by the public address and forwarded to the local client",
   "dashboard.newChannel": "New Channel",
   "dashboard.newChannelDesc": "Once created, you will get a unique Webhook URL to send POST requests.",
   "dashboard.channelNamePlaceholder": "Name, e.g., Alerts",
